@@ -1,0 +1,84 @@
+* ================================================================
+*  CMOS MOSFET Model Library for 5T OTA Project
+*  Technology: 180nm Generic Educational CMOS
+*
+*  MODEL LEVEL: 1 (Shichman-Hodges) -- simplest possible
+*  EQUATIONS USED:
+*
+*  Cutoff   (Vgs < Vt):
+*    Id = 0
+*
+*  Triode   (Vgs > Vt AND Vds < Vgs-Vt):
+*    Id = (KP/2)*(W/L)*[2*(Vgs-Vt)*Vds - Vds^2]
+*
+*  Saturation (Vgs > Vt AND Vds >= Vgs-Vt):
+*    Id = (KP/2)*(W/L)*(Vgs-Vt)^2 * (1 + LAMBDA*Vds)
+*
+*  KEY PARAMETERS:
+*   VTO    = Threshold voltage (V)
+*   KP     = µ0*Cox = Process transconductance (A/V^2)
+*   LAMBDA = Channel-length modulation coefficient (1/V)
+*   GAMMA  = Body-effect coefficient (V^0.5)
+*   PHI    = Surface potential (V)
+* ================================================================
+
+* ================================================================
+*  NMOS MODEL (n-channel MOSFET)
+*  Carrier: electrons (high mobility ~450 cm²/Vs at 180nm)
+* ================================================================
+*
+*  VTO   = +0.5 V   (positive for NMOS)
+*  KP    = 170 µA/V² (= µn * Cox, typical 180nm NMOS)
+*         [µn ≈ 450 cm²/Vs, Cox = εox/tox = 3.9*8.85e-12/4e-9 = 8.63 mF/m²]
+*  LAMBDA= 0.1 /V   (channel-length modulation; smaller for longer L)
+*  GAMMA = 0.4 V^0.5 (body effect)
+*  PHI   = 0.7 V    (2φF, surface potential)
+*  TOX   = 4 nm     (gate oxide thickness, 180nm process)
+*
+.model NMOS_Model NMOS
++ Level=1
++ VTO=0.5
++ KP=170e-6
++ GAMMA=0.4
++ PHI=0.7
++ LAMBDA=0.1
++ TOX=4e-9
++ NSUB=1e17
++ LD=10e-9
++ CJ=2.5e-4
++ CJSW=3e-10
++ PB=0.9
++ MJ=0.5
++ MJSW=0.3
++ CGDO=2.0e-10
++ CGSO=2.0e-10
+
+* ================================================================
+*  PMOS MODEL (p-channel MOSFET)
+*  Carrier: holes (lower mobility ~150 cm²/Vs at 180nm)
+*
+*  WHY IS KP LOWER FOR PMOS?
+*  Holes have ~3x lower mobility than electrons.
+*  KPp = µp * Cox ≈ 60 µA/V² (vs 170 µA/V² for NMOS)
+*  → PMOS is ~2.8x "weaker" per unit W/L
+*
+*  VTO   = -0.5 V   (NEGATIVE for PMOS -- turns on when Vgs < Vt)
+*  LAMBDA= 0.05 /V  (smaller because PMOS sees slightly longer eff. L)
+* ================================================================
+.model PMOS_Model PMOS
++ Level=1
++ VTO=-0.5
++ KP=60e-6
++ GAMMA=0.4
++ PHI=0.7
++ LAMBDA=0.05
++ TOX=4e-9
++ NSUB=5e16
++ LD=10e-9
++ CJ=3.5e-4
++ CJSW=4e-10
++ PB=0.9
++ MJ=0.5
++ MJSW=0.3
++ CGDO=2.0e-10
++ CGSO=2.0e-10
